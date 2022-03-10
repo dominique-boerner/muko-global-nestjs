@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { Injectable } from "@nestjs/common";
+import axios, { AxiosPromise } from "axios";
 
 @Injectable()
 export class MyDocService {
@@ -48,5 +48,19 @@ export class MyDocService {
     return await axios
       .get(this.MY_DOC_BASE_URL, { params: params })
       .then((r) => r.data);
+  }
+
+  async getNews(id: string) {
+    let params = {
+      module: "mydoc",
+      sektion: "show_doctor",
+      uuid: id,
+      return: "json",
+    };
+
+    return await axios
+      .get(this.MY_DOC_BASE_URL, { params: params })
+      .then((r) => r.data)
+      .then((responseData) => responseData.data.DoctorNewsItems);
   }
 }

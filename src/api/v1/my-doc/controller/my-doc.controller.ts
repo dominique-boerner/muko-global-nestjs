@@ -1,5 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { MyDocService } from '../services/my-doc.service';
+import { Controller, Get, Param } from "@nestjs/common";
+import { MyDocService } from "../services/my-doc.service";
 
 @Controller({
   version: "1",
@@ -20,5 +20,10 @@ export class MyDocController {
     return await this.myDocService
       .getMukoGroup(id)
       .then((response) => response);
+  }
+
+  @Get("get-news/:id")
+  async getNews(@Param("id") id: string) {
+    return await this.myDocService.getNews(id).then((response) => response);
   }
 }
