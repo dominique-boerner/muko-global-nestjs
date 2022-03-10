@@ -1,11 +1,8 @@
-import { Controller, Get, Version } from "@nestjs/common";
-import axios from "axios";
+import { Injectable } from '@nestjs/common';
+import axios from 'axios';
 
-@Controller({
-  version: "1",
-  path: "my-doc",
-})
-export class MyDocController {
+@Injectable()
+export class MyDocService {
   readonly MY_DOC_BASE_URL = "https://my-doc.net";
 
   /**
@@ -18,8 +15,7 @@ export class MyDocController {
     "00051148-dc2e-11e3-9aea-5b61b214e2c0",
   ];
 
-  @Get("get-all-muko-doctors")
-  async getAllMukoDoctors() {
+  async getAllMukoGroups() {
     let params = {
       module: "mydoc",
       sektion: "show_doctor",
@@ -39,5 +35,18 @@ export class MyDocController {
     });
 
     return results;
+  }
+
+  async getMukoGroup(id: string) {
+    let params = {
+      module: "mydoc",
+      sektion: "show_doctor",
+      uuid: id,
+      return: "json",
+    };
+
+    return await axios
+      .get(this.MY_DOC_BASE_URL, { params: params })
+      .then((r) => r.data);
   }
 }
