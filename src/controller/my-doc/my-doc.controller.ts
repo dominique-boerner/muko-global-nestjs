@@ -5,10 +5,15 @@ import axios from 'axios';
 export class MyDocController {
   readonly MY_DOC_BASE_URL = 'https://my-doc.net';
 
-  MY_DOC_ID_CATALOG: ReadonlyArray<string> = ['f8484114-5779-11ec-b3ad-64652e69642d'];
+  /**
+   * Defines a list of mukoviszidose specific doctors, self-help groups and communites
+   */
+  MUKO_ID_CATALOG: ReadonlyArray<string> = [
+    'f8484114-5779-11ec-b3ad-64652e69642d',
+  ];
 
-  @Get('get-all-doctors')
-  async getAllDoctors() {
+  @Get('get-all-muko-doctors')
+  async getAllMukoDoctors() {
     let params = {
       module: 'mydoc',
       sektion: 'show_doctor',
@@ -16,12 +21,14 @@ export class MyDocController {
       return: 'json',
     };
 
-    const results: any[] = await Promise.all(this.MY_DOC_ID_CATALOG.map(async (id) => {
-      params = {...params, uuid: id}
-      return await  axios
-        .get(this.MY_DOC_BASE_URL, { params: params })
-        .then((r) => r.data);
-    }))
+    const results: any[] = await Promise.all(
+      this.MUKO_ID_CATALOG.map(async (id) => {
+        params = { ...params, uuid: id };
+        return await axios
+          .get(this.MY_DOC_BASE_URL, { params: params })
+          .then((r) => r.data);
+      }),
+    );
 
     return results;
   }
