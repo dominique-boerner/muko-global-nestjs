@@ -53,7 +53,7 @@ export class MyDocController {
       .then((response) => response);
   }
 
-  @Get("members/:id")
+  @Get("team/:id")
   async getMembers(@Param("id") id: string) {
     return await this.myDocService.getMembers(id).then((response) => response);
   }
