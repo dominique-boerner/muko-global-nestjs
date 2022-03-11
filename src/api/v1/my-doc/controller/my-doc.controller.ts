@@ -12,14 +12,14 @@ export class MyDocController {
   @Get("users")
   async getUsers() {
     return await this.myDocService
-      .getAllMukoGroups()
+      .getAllUsers()
       .then((response) => response);
   }
 
   @Get("users/:id")
   async getUsersById(@Param("id") id: string) {
     return await this.myDocService
-      .getMukoGroup(id)
+      .getUser(id)
       .then((response) => response);
   }
 

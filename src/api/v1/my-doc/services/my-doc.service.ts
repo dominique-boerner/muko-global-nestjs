@@ -5,6 +5,13 @@ import axios from "axios";
 export class MyDocService {
   readonly MY_DOC_BASE_URL = "https://my-doc.net";
 
+  defaultParams = {
+    module: "mydoc",
+    sektion: "show_doctor",
+    uuid: "",
+    return: "json",
+  };
+
   /**
    * Defines a list of cf specific doctors, self-help groups and communities
    */
@@ -15,17 +22,10 @@ export class MyDocService {
     "00051148-dc2e-11e3-9aea-5b61b214e2c0",
   ];
 
-  async getAllMukoGroups() {
-    let params = {
-      module: "mydoc",
-      sektion: "show_doctor",
-      uuid: "",
-      return: "json",
-    };
-
+  async getAllUsers(): Promise<any[]> {
     const results: any[] = await Promise.all(
       this.MUKO_ID_CATALOG.map(async (id) => {
-        params = { ...params, uuid: id };
+        const params = { ...this.defaultParams, uuid: id };
         return await axios
           .get(this.MY_DOC_BASE_URL, { params: params })
           .then((r) => r.data)
@@ -40,30 +40,18 @@ export class MyDocService {
     return results;
   }
 
-  async getMukoGroup(id: string) {
-    let params = {
-      module: "mydoc",
-      sektion: "show_doctor",
-      uuid: id,
-      return: "json",
-    };
-
+  async getUser(id: string): Promise<any> {
+    const params = { ...this.defaultParams, uuid: id };
     return await axios
       .get(this.MY_DOC_BASE_URL, { params: params })
       .then((r) => r.data)
       .then((responseData) => {
-        return responseData.success ? responseData : [];
+        return responseData;
       });
   }
 
-  async getNews(id: string, sort = "asc") {
-    let params = {
-      module: "mydoc",
-      sektion: "show_doctor",
-      uuid: id,
-      return: "json",
-    };
-
+  async getNews(id: string, sort = "asc"): Promise<any[]> {
+    const params = { ...this.defaultParams, uuid: id };
     return await axios
       .get(this.MY_DOC_BASE_URL, { params: params })
       .then((r) => r.data)
@@ -88,13 +76,8 @@ export class MyDocService {
       });
   }
 
-  async getMembers(id: string) {
-    let params = {
-      module: "mydoc",
-      sektion: "show_doctor",
-      uuid: id,
-      return: "json",
-    };
+  async getMembers(id: string): Promise<any[]> {
+    const params = { ...this.defaultParams, uuid: id };
 
     return await axios
       .get(this.MY_DOC_BASE_URL, { params: params })
@@ -104,31 +87,21 @@ export class MyDocService {
       });
   }
 
-  async getImage(id: string) {
-    let params = {
-      module: "mydoc",
-      sektion: "show_doctor",
-      uuid: id,
-      return: "json",
-    };
+  async getImage(id: string): Promise<string> {
+    const params = { ...this.defaultParams, uuid: id };
 
     return await axios
       .get(this.MY_DOC_BASE_URL, { params: params })
       .then((r) => r.data)
       .then((responseData) => {
-        return responseData.success ? responseData.data._image : [];
+        return responseData.success ? responseData.data._image : "";
       });
   }
 
-  async getMultipleNews(ids: string[], sort = "asc") {
-    const results = await Promise.all(
+  async getMultipleNews(ids: string[], sort = "asc"): Promise<any[]> {
+    return await Promise.all(
       ids.map(async (id) => {
-        let params = {
-          module: "mydoc",
-          sektion: "show_doctor",
-          uuid: id,
-          return: "json",
-        };
+        const params = { ...this.defaultParams, uuid: id };
 
         return await axios
           .get(this.MY_DOC_BASE_URL, { params: params })
@@ -159,7 +132,5 @@ export class MyDocService {
           }
         }),
     );
-
-    return results;
   }
 }
