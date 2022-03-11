@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import axios, { AxiosPromise } from "axios";
+import axios from "axios";
 
 @Injectable()
 export class MyDocService {
@@ -28,7 +28,10 @@ export class MyDocService {
         params = { ...params, uuid: id };
         return await axios
           .get(this.MY_DOC_BASE_URL, { params: params })
-          .then((r) => r.data);
+          .then((r) => r.data)
+          .then((responseData) => {
+            return responseData.success ? responseData : [];
+          });
       }),
     ).then((results) => {
       return results.filter((result) => result.success === true);
@@ -47,10 +50,13 @@ export class MyDocService {
 
     return await axios
       .get(this.MY_DOC_BASE_URL, { params: params })
-      .then((r) => r.data);
+      .then((r) => r.data)
+      .then((responseData) => {
+        return responseData.success ? responseData : [];
+      });
   }
 
-  async getNews(id: string) {
+  async getNews(id: string, sort = "asc") {
     let params = {
       module: "mydoc",
       sektion: "show_doctor",
@@ -61,6 +67,99 @@ export class MyDocService {
     return await axios
       .get(this.MY_DOC_BASE_URL, { params: params })
       .then((r) => r.data)
-      .then((responseData) => responseData.data.DoctorNewsItems);
+      .then((responseData) => {
+        if (responseData.success) {
+          return responseData.data.DoctorNewsItems.sort((a: any, b: any) => {
+            if (sort === "asc") {
+              return (
+                new Date(a.updated_at).valueOf() -
+                new Date(b.updated_at).valueOf()
+              );
+            } else if (sort === "desc") {
+              return (
+                new Date(b.updated_at).valueOf() -
+                new Date(a.updated_at).valueOf()
+              );
+            }
+          });
+        } else {
+          return [];
+        }
+      });
+  }
+
+  async getMembers(id: string) {
+    let params = {
+      module: "mydoc",
+      sektion: "show_doctor",
+      uuid: id,
+      return: "json",
+    };
+
+    return await axios
+      .get(this.MY_DOC_BASE_URL, { params: params })
+      .then((r) => r.data)
+      .then((responseData) => {
+        return responseData.success ? responseData.data.Employees : [];
+      });
+  }
+
+  async getImage(id: string) {
+    let params = {
+      module: "mydoc",
+      sektion: "show_doctor",
+      uuid: id,
+      return: "json",
+    };
+
+    return await axios
+      .get(this.MY_DOC_BASE_URL, { params: params })
+      .then((r) => r.data)
+      .then((responseData) => {
+        return responseData.success ? responseData.data._image : [];
+      });
+  }
+
+  async getMultipleNews(ids: string[], sort = "asc") {
+    const results = await Promise.all(
+      ids.map(async (id) => {
+        let params = {
+          module: "mydoc",
+          sektion: "show_doctor",
+          uuid: id,
+          return: "json",
+        };
+
+        return await axios
+          .get(this.MY_DOC_BASE_URL, { params: params })
+          .then((r) => r.data)
+          .then((responseData) => {
+            return responseData.success
+              ? responseData.data.DoctorNewsItems
+              : [];
+          });
+      }),
+    ).then((results) =>
+      results
+        .filter((result) => {
+          return result.length > 0;
+        })
+        .flat(1)
+        .sort((a: any, b: any) => {
+          if (sort === "asc") {
+            return (
+              new Date(a.updated_at).valueOf() -
+              new Date(b.updated_at).valueOf()
+            );
+          } else if (sort === "desc") {
+            return (
+              new Date(b.updated_at).valueOf() -
+              new Date(a.updated_at).valueOf()
+            );
+          }
+        }),
+    );
+
+    return results;
   }
 }

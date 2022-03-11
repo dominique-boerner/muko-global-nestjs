@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from "@nestjs/common";
-import { MyDocService } from "../services/my-doc.service";
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { MyDocService } from '../services/my-doc.service';
+import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 
 @Controller({
   version: "1",
@@ -23,14 +24,42 @@ export class MyDocController {
   }
 
   @Get("news/:id")
-  async getNews(@Param("id") id: string) {
-    return await this.myDocService.getNews(id).then((response) => response);
+  @ApiImplicitQuery({
+    name: "sort",
+    required: false,
+    type: String,
+  })
+  async getNews(@Param("id") id: string, @Query("sort") sort: "asc" | "desc") {
+    const sortBy: "asc" | "desc" = sort ? sort : "asc";
+    return await this.myDocService
+      .getNews(id, sortBy)
+      .then((response) => response);
   }
 
-  // TODO:
-  //  - get-team-members
-  //  - get-profile-image
-  //  - sort news by
-  //  - get all news of multiple groups, sorted by
-  //  - get-muko-group: nur Namen, Ort, Bild in groß
+  @Get("news/")
+  @ApiImplicitQuery({
+    name: "sort",
+    required: false,
+    type: String,
+  })
+  async getMultipleNews(
+    @Query("ids") ids: string,
+    @Query("sort") sort: "asc" | "desc"
+  ) {
+    const idArray = ids.split(",");
+    const sortBy: "asc" | "desc" = sort ? sort : "asc";
+    return await this.myDocService
+      .getMultipleNews(idArray, sortBy)
+      .then((response) => response);
+  }
+
+  @Get("members/:id")
+  async getMembers(@Param("id") id: string) {
+    return await this.myDocService.getMembers(id).then((response) => response);
+  }
+
+  @Get("image/:id")
+  async getImage(@Param("id") id: string) {
+    return await this.myDocService.getImage(id).then((response) => response);
+  }
 }
