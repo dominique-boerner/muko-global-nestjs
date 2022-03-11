@@ -8,22 +8,29 @@ import { MyDocService } from "../services/my-doc.service";
 export class MyDocController {
   constructor(private readonly myDocService: MyDocService) {}
 
-  @Get("get-all-muko-groups")
-  async getAllMukoGroups() {
+  @Get("users")
+  async getUsers() {
     return await this.myDocService
       .getAllMukoGroups()
       .then((response) => response);
   }
 
-  @Get("get-muko-group/:id")
-  async getMukoGroup(@Param("id") id: string) {
+  @Get("users/:id")
+  async getUsersById(@Param("id") id: string) {
     return await this.myDocService
       .getMukoGroup(id)
       .then((response) => response);
   }
 
-  @Get("get-news/:id")
+  @Get("news/:id")
   async getNews(@Param("id") id: string) {
     return await this.myDocService.getNews(id).then((response) => response);
   }
+
+  // TODO:
+  //  - get-team-members
+  //  - get-profile-image
+  //  - sort news by
+  //  - get all news of multiple groups, sorted by
+  //  - get-muko-group: nur Namen, Ort, Bild in groß
 }
