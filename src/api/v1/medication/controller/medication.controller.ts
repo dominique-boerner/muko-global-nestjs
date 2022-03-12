@@ -1,5 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { MedicationService } from '../services/medication.service';
+import { ApiImplicitQuery } from '@nestjs/swagger/dist/decorators/api-implicit-query.decorator';
 
 @Controller({
   version: "1",
@@ -10,6 +11,16 @@ export class MedicationController {
   }
 
   @Get()
+  @ApiImplicitQuery({
+    name: "count",
+    required: false,
+    type: Number,
+  })
+  @ApiImplicitQuery({
+    name: "page",
+    required: false,
+    type: Number,
+  })
   getMedication(
     @Query("name") name: string,
     @Query("count") count: number,
