@@ -35,4 +35,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # License
-./src/config/contentful.ts
+/src/config/contentful.ts
